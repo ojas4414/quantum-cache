@@ -1,0 +1,17 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# ONNX binary model files (large)
+*.onnx
+*.onnx.data
+
+# OS
+.DS_Store
+Thumbs.db
