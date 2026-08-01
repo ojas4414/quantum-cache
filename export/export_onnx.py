@@ -24,7 +24,7 @@ def export(model,filename):
         output_names=['output'],
         dynamic_axes={
             'input':{0:'batch_size'},
-            'output':{0,'batch_size'}
+            'output':{0:'batch_size'}
         }
 
 
@@ -50,15 +50,6 @@ def benchmark_onnx(filename, runs=100):
     
     return ((end - start) / runs) * 1000
 
-baseline_ms  = benchmark_onnx("export/baseline.onnx")
-optimized_ms = benchmark_onnx("export/optimized.onnx")
-improvement  = ((baseline_ms - optimized_ms) / baseline_ms) * 100
-
-print(f"\n--- ONNX Inference ---")
-print(f"Baseline  latency: {baseline_ms:.4f} ms")
-print(f"Optimized latency: {optimized_ms:.4f} ms")
-print(f"Improvement:       {improvement:.1f}%")
-
 if __name__ == "__main__":
     baseline  = Transformer()
     optimized = OptimizedTransformer()
@@ -67,3 +58,15 @@ if __name__ == "__main__":
     export(optimized, "export/optimized.onnx")
 
     print("Both models exported successfully")
+
+    # Benchmarking has to happen after the export above -- the .onnx files are
+    # gitignored, so on a fresh clone they do not exist until this script
+    # writes them.
+    baseline_ms  = benchmark_onnx("export/baseline.onnx")
+    optimized_ms = benchmark_onnx("export/optimized.onnx")
+    improvement  = ((baseline_ms - optimized_ms) / baseline_ms) * 100
+
+    print(f"\n--- ONNX Inference ---")
+    print(f"Baseline  latency: {baseline_ms:.4f} ms")
+    print(f"Optimized latency: {optimized_ms:.4f} ms")
+    print(f"Improvement:       {improvement:.1f}%")

@@ -41,8 +41,12 @@ class OptimizedAttention(nn.Module):
         weights = torch.softmax(scores, dim=-1)
 
         
-        out = torch.matmul(weights, K.transpose(1, 2))  
-        out = out.transpose(1, 2)                       
+        # Attention output is weights @ V. This previously read K, which meant
+        # V was computed and then discarded -- the two models were not
+        # computing the same function, so any latency comparison between them
+        # was not measuring layout alone.
+        out = torch.matmul(weights, V.transpose(1, 2))
+        out = out.transpose(1, 2)
         out = out.reshape(B, S, D)
 
         return self.W_o(out), K, V

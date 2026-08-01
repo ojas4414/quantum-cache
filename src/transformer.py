@@ -85,6 +85,11 @@ class Transformer(nn.Module):
         ])
         self.kv_cache = []
     def forward(self,x):
+        # Reset per forward pass. Without this the cache grows without bound
+        # across repeated calls, so a 100-run benchmark ends up timing
+        # allocator pressure from hundreds of retained tensors rather than
+        # the attention math itself.
+        self.kv_cache = []
         for block in self.blocks:
             x,K,V=block(x)
             self.kv_cache.append((K,V))

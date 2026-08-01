@@ -1,0 +1,20 @@
+# Generated from the imports actually used in this repo.
+# Verified against Python 3.14.3 / torch 2.11.0+cpu / onnxruntime 1.24.4.
+
+# src/transformer.py, src/kv_cache_optimized.py, export/benchmark.py,
+# profiling/profile_baseline.py  (torch.profiler is part of torch)
+torch
+
+# export/export_onnx.py
+onnxruntime
+numpy
+
+# torch.onnx.export writes the ONNX graph; the `onnx` package is what
+# validates and serializes it. Not imported directly by any file here,
+# but the export step fails without it on most torch builds.
+onnx
+
+# torch 2.11's torch.onnx.export defaults to dynamo=True, and that path
+# imports onnxscript. Without it, export/export_onnx.py dies with
+# "ModuleNotFoundError: No module named 'onnxscript'" before writing anything.
+onnxscript
